@@ -20,7 +20,7 @@ namespace HRGT
 
         public const string PluginAuthor = "HIFU";
         public const string PluginName = "HIFURailgunnerTweaks";
-        public const string PluginVersion = "1.0.3";
+        public const string PluginVersion = "1.0.4";
 
         public static ConfigFile HRGTConfig;
         public static ManualLogSource HRGTLogger;

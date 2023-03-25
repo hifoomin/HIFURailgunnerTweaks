@@ -1,4 +1,6 @@
 ﻿using R2API;
+using System;
+using UnityEngine;
 
 namespace HRGT.Misc
 {
@@ -8,6 +10,7 @@ namespace HRGT.Misc
         public static float ReloadBarPercent;
         public static float ScopeDurUp;
         public static float ScopeDurDown;
+        public static bool ScaleWithAS;
         public override string Name => ":: Misc : Scope and Active Reload";
 
         public override void Init()
@@ -17,6 +20,7 @@ namespace HRGT.Misc
             ReloadBarPercent = ConfigOption(0.13f, "Reload Bar Duration", "Vanilla is 0.25. Formula: (Reload Bar Duration / 1.5) * 100 for actual percent");
             ScopeDurUp = ConfigOption(0f, "Scope Duration Wind Up", "Vanilla is 0.1");
             ScopeDurDown = ConfigOption(0f, "Scope Duration Wind Down", "Vanilla is 0.2");
+            ScaleWithAS = ConfigOption(false, "Scale Reload Bar Duration with Attack Speed?", "Vanilla is true");
         }
 
         public override void Hooks()
@@ -31,7 +35,22 @@ namespace HRGT.Misc
         private void Reloading_OnEnter(On.EntityStates.Railgunner.Reload.Reloading.orig_OnEnter orig, EntityStates.Railgunner.Reload.Reloading self)
         {
             self.boostWindowDuration = ReloadBarPercent;
+
             orig(self);
+
+            if (ScaleWithAS == false)
+            {
+                // Main.HRGTLogger.LogError("scale with as is false");
+                self.duration = (self.boostWindowDelay + self.boostWindowDuration) + (self.baseDuration - (self.boostWindowDelay + self.boostWindowDuration));
+                self.adjustedBoostWindowDelay = Mathf.Min(self.boostWindowDelay / self.baseDuration * self.duration, self.boostWindowDelay);
+                self.adjustedBoostWindowDuration = Mathf.Max((self.boostWindowDelay + self.boostWindowDuration) / self.baseDuration * self.duration, (self.boostWindowDelay + self.boostWindowDuration)) - self.adjustedBoostWindowDelay;
+                // Main.HRGTLogger.LogError("duration is " + self.duration);
+                // Main.HRGTLogger.LogError("boost window delay is " + self.boostWindowDelay);
+                // Main.HRGTLogger.LogError("boost window duration is " + self.boostWindowDuration);
+                // Main.HRGTLogger.LogError("base duration is " + self.baseDuration);
+                // Main.HRGTLogger.LogError("adjusted boost window delay is " + self.adjustedBoostWindowDelay);
+                // Main.HRGTLogger.LogError("adjusted boost window duration is " + self.adjustedBoostWindowDuration);
+            }
         }
 
         private void Boosted_OnEnter(On.EntityStates.Railgunner.Reload.Boosted.orig_OnEnter orig, EntityStates.Railgunner.Reload.Boosted self)
