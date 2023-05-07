@@ -22,7 +22,7 @@ namespace HRGT.Skills
         public override void Init()
         {
             Damage = ConfigOption(4f, "Damage", "Decimal. Vanilla is 4");
-            PiercingDamage = ConfigOption(0.5f, "Pierce Damage Falloff", "Decimal. Vanilla is 0.5");
+            PiercingDamage = ConfigOption(0.5f, "Pierce Damage Falloff", "Decimal. Vanilla is 0.5. Higher values mean less piercing damage falloff, so more damage overall.");
             AttackRate = ConfigOption(2f, "Attacks Per Second", "Vanilla is 2");
             ZoomFOV = ConfigOption(30f, "Zoom FOV", "Vanilla is 30. Lower value is more zoomed in");
             base.Init();

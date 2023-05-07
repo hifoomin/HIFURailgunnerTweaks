@@ -13,6 +13,7 @@ namespace HRGT.Skills
         public static float CritDamage;
         public static float PiercingDamage;
         public static float ProcCoefficient;
+        public static float Radius;
 
         public override string Name => ": Special :: Cryocharge";
 
@@ -24,8 +25,9 @@ namespace HRGT.Skills
         {
             Damage = ConfigOption(20f, "Damage", "Decimal. Vanilla is 20");
             CritDamage = ConfigOption(1f, "Crit Damage Multiplier", "Decimal. Vanilla is 1");
-            PiercingDamage = ConfigOption(1f, "Pierce Damage Falloff", "Decimal. Vanilla is 1");
+            PiercingDamage = ConfigOption(1f, "Pierce Damage Falloff", "Decimal. Vanilla is 1. Higher values mean less piercing damage falloff, so more damage overall.");
             ProcCoefficient = ConfigOption(1.5f, "Proc Coefficient", "Vanilla is 1.5");
+            Radius = ConfigOption(2f, "Radius", "Vanilla is 2");
             base.Init();
         }
 
@@ -43,6 +45,7 @@ namespace HRGT.Skills
                 self.piercingDamageCoefficientPerTarget = PiercingDamage;
                 self.critDamageMultiplier = CritDamage;
                 self.procCoefficient = ProcCoefficient;
+                self.bulletRadius = Radius;
             }
             orig(self);
         }

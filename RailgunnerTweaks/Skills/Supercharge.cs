@@ -10,6 +10,7 @@ namespace HRGT.Skills
         public static float PiercingDamage;
         public static float ProcCoefficient;
         public static float HopooBalance;
+        public static float Radius;
 
         public override string Name => ": Special : Supercharge";
 
@@ -21,9 +22,10 @@ namespace HRGT.Skills
         {
             Damage = ConfigOption(17.5f, "Damage", "Decimal. Vanilla is 40");
             CritDamage = ConfigOption(2f, "Crit Damage Multiplier", "Decimal. Vanilla is 1.5");
-            PiercingDamage = ConfigOption(1f, "Pierce Damage Falloff", "Decimal. Vanilla is 1");
+            PiercingDamage = ConfigOption(1f, "Pierce Damage Falloff", "Decimal. Vanilla is 1. Higher values mean less piercing damage falloff, so more damage overall.");
             ProcCoefficient = ConfigOption(1.5f, "Proc Coefficient", "Vanilla is 3");
             HopooBalance = ConfigOption(5f, "Disable Duration", "Vanilla is 5");
+            Radius = ConfigOption(2f, "Radius", "Vanilla is 2");
             base.Init();
         }
 
@@ -49,6 +51,7 @@ namespace HRGT.Skills
                 self.critDamageMultiplier = CritDamage;
                 self.procCoefficient = ProcCoefficient;
                 self.recoilAmplitudeY = 7f;
+                self.bulletRadius = Radius;
             }
             orig(self);
         }
