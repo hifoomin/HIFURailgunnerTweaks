@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-namespace HRGT.Skills
+namespace HIFURailgunnerTweaks.Skills
 {
     public class XQRSmartRoundSystem : TweakBase
     {

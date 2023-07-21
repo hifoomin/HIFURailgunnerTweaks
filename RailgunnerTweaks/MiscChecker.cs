@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HRGT
+namespace HIFURailgunnerTweaks
 {
     public abstract class MiscBase<T> : MiscBase where T : MiscBase<T>
     {

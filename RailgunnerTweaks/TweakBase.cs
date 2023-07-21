@@ -1,6 +1,6 @@
 ﻿using R2API;
 
-namespace HRGT
+namespace HIFURailgunnerTweaks
 {
     public abstract class TweakBase
     {
@@ -11,7 +11,9 @@ namespace HRGT
 
         public T ConfigOption<T>(T value, string name, string description)
         {
-            return Main.HRGTConfig.Bind<T>(Name, name, value, description).Value;
+            var config = Main.HRGTConfig.Bind<T>(Name, name, value, description);
+            ConfigManager.HandleConfig<T>(config, Main.HRGTBackupConfig, name);
+            return config.Value;
         }
 
         public abstract void Hooks();

@@ -1,7 +1,7 @@
-﻿using HRGT.Misc;
+﻿using HIFURailgunnerTweaks.Misc;
 using R2API;
 
-namespace HRGT.Skills
+namespace HIFURailgunnerTweaks.Skills
 {
     public class Supercharge : TweakBase
     {

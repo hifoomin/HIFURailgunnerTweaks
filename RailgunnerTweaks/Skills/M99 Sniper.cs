@@ -1,11 +1,9 @@
-﻿using HRGT.Misc;
+﻿using HIFURailgunnerTweaks.Misc;
 using R2API;
 using RoR2;
-using RoR2.Projectile;
-using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-namespace HRGT.Skills
+namespace HIFURailgunnerTweaks.Skills
 {
     public class M99Sniper : TweakBase
     {

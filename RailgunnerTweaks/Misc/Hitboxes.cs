@@ -1,7 +1,7 @@
 ﻿using R2API;
 using RoR2;
 
-namespace HRGT.Misc
+namespace HIFURailgunnerTweaks.Misc
 {
     public class Hitboxes : MiscBase
     {

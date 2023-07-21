@@ -1,6 +1,7 @@
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
+using HarmonyLib;
 using R2API;
 using R2API.ContentManagement;
 using System;
@@ -8,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace HRGT
+namespace HIFURailgunnerTweaks
 {
     [BepInDependency(LanguageAPI.PluginGUID)]
     [BepInDependency(R2APIContentManager.PluginGUID)]
@@ -20,17 +21,35 @@ namespace HRGT
 
         public const string PluginAuthor = "HIFU";
         public const string PluginName = "HIFURailgunnerTweaks";
-        public const string PluginVersion = "1.0.5";
+        public const string PluginVersion = "1.0.6";
 
         public static ConfigFile HRGTConfig;
+        public static ConfigFile HRGTBackupConfig;
+
+        public static ConfigEntry<bool> enableAutoConfig { get; set; }
+        public static ConfigEntry<string> latestVersion { get; set; }
+
         public static ManualLogSource HRGTLogger;
 
-        private string version = PluginVersion;
+        public static bool _preVersioning = false;
 
         public void Awake()
         {
             HRGTLogger = Logger;
             HRGTConfig = Config;
+
+            HRGTBackupConfig = new(Paths.ConfigPath + "\\" + PluginAuthor + "." + PluginName + ".Backup.cfg", true);
+            HRGTBackupConfig.Bind(": DO NOT MODIFY THIS FILES CONTENTS :", ": DO NOT MODIFY THIS FILES CONTENTS :", ": DO NOT MODIFY THIS FILES CONTENTS :", ": DO NOT MODIFY THIS FILES CONTENTS :");
+
+            enableAutoConfig = HRGTConfig.Bind("Config", "Enable Auto Config Sync", true, "Disabling this would stop HIFURailgunnerTweaks from syncing config whenever a new version is found.");
+            _preVersioning = !((Dictionary<ConfigDefinition, string>)AccessTools.DeclaredPropertyGetter(typeof(ConfigFile), "OrphanedEntries").Invoke(HRGTConfig, null)).Keys.Any(x => x.Key == "Latest Version");
+            latestVersion = HRGTConfig.Bind("Config", "Latest Version", PluginVersion, "DO NOT CHANGE THIS");
+            if (enableAutoConfig.Value && (_preVersioning || (latestVersion.Value != PluginVersion)))
+            {
+                latestVersion.Value = PluginVersion;
+                ConfigManager.VersionChanged = true;
+                HRGTLogger.LogInfo("Config Autosync Enabled.");
+            }
 
             IEnumerable<Type> enumerable2 = from type in Assembly.GetExecutingAssembly().GetTypes()
                                             where !type.IsAbstract && type.IsSubclassOf(typeof(MiscBase))

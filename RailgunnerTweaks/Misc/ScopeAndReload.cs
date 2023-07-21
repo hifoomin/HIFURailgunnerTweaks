@@ -2,7 +2,7 @@
 using System;
 using UnityEngine;
 
-namespace HRGT.Misc
+namespace HIFURailgunnerTweaks.Misc
 {
     public class ScopeAndReload : MiscBase
     {

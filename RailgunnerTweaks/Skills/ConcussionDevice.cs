@@ -5,7 +5,7 @@ using RoR2.Projectile;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-namespace HRGT.Skills
+namespace HIFURailgunnerTweaks.Skills
 {
     public class ConcussionDevice : TweakBase
     {
