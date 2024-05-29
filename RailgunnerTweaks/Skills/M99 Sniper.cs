@@ -15,7 +15,7 @@ namespace HIFURailgunnerTweaks.Skills
 
         public override string SkillToken => "secondary";
 
-        public override string DescText => "Activate your <style=cIsUtility>long-range scope</style>, highlighting <style=cIsDamage>Weak Points</style> and transforming your weapon into a piercing <style=cIsDamage>" + d(Damage) + "-" + d((Damage + ScopeAndReload.Damage) * 2) + " damage</style> railgun.";
+        public override string DescText => "Activate your <style=cIsUtility>long-range scope</style>, highlighting <style=cIsDamage>Weak Points</style> and transforming your weapon into a piercing <style=cIsDamage>" + d(Damage) + "-" + d((Damage + ScopeAndReload.MaximumReloadDamageBonus) * 2) + " damage</style> railgun.";
 
         public override void Init()
         {

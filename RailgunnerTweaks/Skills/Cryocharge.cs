@@ -15,7 +15,7 @@ namespace HIFURailgunnerTweaks.Skills
 
         public override string SkillToken => "special_alt";
 
-        public override string DescText => "<style=cIsUtility>Freezing</style>. Fire a <style=cIsDamage>piercing</style> round for <style=cIsDamage>" + d(Damage) + "-" + d((Damage + ScopeAndReload.Damage) * CritDamage * 2) + " damage</style>.";
+        public override string DescText => "<style=cIsUtility>Freezing</style>. Fire a <style=cIsDamage>piercing</style> round for <style=cIsDamage>" + d(Damage) + "-" + d((Damage + ScopeAndReload.MaximumReloadDamageBonus) * CritDamage * 2) + " damage</style>.";
 
         public override void Init()
         {

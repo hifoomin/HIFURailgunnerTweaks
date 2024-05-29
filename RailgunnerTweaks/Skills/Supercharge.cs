@@ -16,11 +16,11 @@ namespace HIFURailgunnerTweaks.Skills
 
         public override string SkillToken => "special";
 
-        public override string DescText => "Fire a <style=cIsDamage>piercing</style> round for <style=cIsDamage>" + d(Damage) + "-" + d((Damage + ScopeAndReload.Damage) * CritDamage * 2) + " damage</style>. Afterwards, <style=cIsHealth>all your weapons are disabled</style> for <style=cIsHealth>" + HopooBalance + "</style> seconds.";
+        public override string DescText => "Fire a <style=cIsDamage>piercing</style> round for <style=cIsDamage>" + d(Damage) + "-" + d((Damage + ScopeAndReload.MaximumReloadDamageBonus) * CritDamage * 2) + " damage</style>. Afterwards, <style=cIsHealth>all your weapons are disabled</style> for <style=cIsHealth>" + HopooBalance + "</style> seconds.";
 
         public override void Init()
         {
-            Damage = ConfigOption(17.5f, "Damage", "Decimal. Vanilla is 40");
+            Damage = ConfigOption(20f, "Damage", "Decimal. Vanilla is 40");
             CritDamage = ConfigOption(2f, "Crit Damage Multiplier", "Decimal. Vanilla is 1.5");
             PiercingDamage = ConfigOption(1f, "Pierce Damage Falloff", "Decimal. Vanilla is 1. Higher values mean less piercing damage falloff, so more damage overall.");
             ProcCoefficient = ConfigOption(1.5f, "Proc Coefficient", "Vanilla is 3");

@@ -2,12 +2,15 @@ using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
+using HIFURailgunnerTweaks.Misc;
 using R2API;
 using R2API.ContentManagement;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace HIFURailgunnerTweaks
 {
@@ -21,7 +24,7 @@ namespace HIFURailgunnerTweaks
 
         public const string PluginAuthor = "HIFU";
         public const string PluginName = "HIFURailgunnerTweaks";
-        public const string PluginVersion = "1.0.6";
+        public const string PluginVersion = "1.1.0";
 
         public static ConfigFile HRGTConfig;
         public static ConfigFile HRGTBackupConfig;
@@ -50,6 +53,9 @@ namespace HIFURailgunnerTweaks
                 ConfigManager.VersionChanged = true;
                 HRGTLogger.LogInfo("Config Autosync Enabled.");
             }
+
+            var railgunner = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/Railgunner/RailgunnerBody.prefab").WaitForCompletion();
+            railgunner.AddComponent<ReloadScalingComponent>();
 
             IEnumerable<Type> enumerable2 = from type in Assembly.GetExecutingAssembly().GetTypes()
                                             where !type.IsAbstract && type.IsSubclassOf(typeof(MiscBase))

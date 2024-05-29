@@ -1,13 +1,16 @@
-﻿using R2API;
-using System;
+﻿using RoR2;
+using R2API;
 using UnityEngine;
 
 namespace HIFURailgunnerTweaks.Misc
 {
     public class ScopeAndReload : MiscBase
     {
-        public static float Damage;
-        public static float ReloadBarPercent;
+        public static float MinimumReloadDamageBonus;
+        public static float MaximumReloadDamageBonus;
+        public static float MinimumReloadBarPercent;
+        public static float MaximumReloadBarPercent;
+        public static int MaximumSuccessfulReloads;
         public static float ScopeDurUp;
         public static float ScopeDurDown;
         public static bool ScaleWithAS;
@@ -16,8 +19,11 @@ namespace HIFURailgunnerTweaks.Misc
         public override void Init()
         {
             base.Init();
-            Damage = ConfigOption(5f, "Damage Bonus", "Decimal. Vanilla is 5");
-            ReloadBarPercent = ConfigOption(0.13f, "Reload Bar Duration", "Vanilla is 0.25. Formula: (Reload Bar Duration / 1.5) * 100 for actual percent");
+            MinimumReloadDamageBonus = ConfigOption(2.5f, "Minimum Successive Reload Damage Bonus", "Decimal. Vanilla is 5 Formula for Damage Increase per reload: (Maximum Damage Successive Reload Damage Bonus - Minimum Successive Reload Damage Bonus) / Maximum Successive Reloads");
+            MaximumReloadDamageBonus = ConfigOption(10f, "Maximum Damage Successive Reload Damage Bonus", "Decimal. Vanilla is 5");
+            MinimumReloadBarPercent = ConfigOption(0.015f, "Minimum Successive Reload Bar Duration", "Vanilla is 0.25. Formula for Actual Percent: (Reload Bar Duration / 1.5) * 100");
+            MaximumReloadBarPercent = ConfigOption(0.15f, "Maximum Successive Reload Bar Duration", "Vanilla is 0.25. Formula for Actual Percent: (Reload Bar Duration / 1.5) * 100");
+            MaximumSuccessfulReloads = ConfigOption(5, "Maximum Successive Reloads", "Vanilla is ??? Formula for Reload Bar Duration decrease per reload: (MaximumReloadBarPercent - MinimumReloadBarPercent) / Maximum Successful Reloads");
             ScopeDurUp = ConfigOption(0f, "Scope Duration Wind Up", "Vanilla is 0.1");
             ScopeDurDown = ConfigOption(0f, "Scope Duration Wind Down", "Vanilla is 0.2");
             ScaleWithAS = ConfigOption(false, "Scale Reload Bar Duration with Attack Speed?", "Vanilla is true");
@@ -29,12 +35,36 @@ namespace HIFURailgunnerTweaks.Misc
             On.EntityStates.Railgunner.Scope.BaseWindDown.OnEnter += BaseWindDown_OnEnter;
             On.EntityStates.Railgunner.Reload.Boosted.OnEnter += Boosted_OnEnter;
             On.EntityStates.Railgunner.Reload.Reloading.OnEnter += Reloading_OnEnter;
-            LanguageAPI.Add("RAILGUNNER_ACTIVE_RELOAD_DESCRIPTION", "Perfectly time your reload to recover faster and to boost the damage of your next shot by <style=cIsDamage>+" + d(Damage) + "</style>.");
+            On.EntityStates.Railgunner.Reload.Reloading.AttemptBoost += Reloading_AttemptBoost;
+            LanguageAPI.Add("RAILGUNNER_ACTIVE_RELOAD_DESCRIPTION", "Perfectly time your reload to recover faster and to boost the damage of your next shot by <style=cIsDamage>+" + d(MinimumReloadDamageBonus) + "-" + d(MaximumReloadDamageBonus) + "</style>.");
+        }
+
+        private bool Reloading_AttemptBoost(On.EntityStates.Railgunner.Reload.Reloading.orig_AttemptBoost orig, EntityStates.Railgunner.Reload.Reloading self)
+        {
+            var ret = orig(self);
+            if (ret && self.hasAttempted)
+            {
+                if (self.characterBody.TryGetComponent<ReloadScalingComponent>(out var reloadScalingComponent))
+                {
+                    reloadScalingComponent.successfulReloadCounter = Mathf.Min(MaximumSuccessfulReloads, reloadScalingComponent.successfulReloadCounter + 1); // jank for now, idk why util remap ignores my cap
+                }
+            }
+            else
+            {
+                if (self.characterBody.TryGetComponent<ReloadScalingComponent>(out var reloadScalingComponent))
+                {
+                    reloadScalingComponent.successfulReloadCounter = 0;
+                }
+            }
+            return ret;
         }
 
         private void Reloading_OnEnter(On.EntityStates.Railgunner.Reload.Reloading.orig_OnEnter orig, EntityStates.Railgunner.Reload.Reloading self)
         {
-            self.boostWindowDuration = ReloadBarPercent;
+            if (self.outer.TryGetComponent<ReloadScalingComponent>(out var reloadScalingComponent))
+            {
+                self.boostWindowDuration = Util.Remap(reloadScalingComponent.successfulReloadCounter, 0, MaximumSuccessfulReloads, MaximumReloadBarPercent, MinimumReloadBarPercent);
+            }
 
             orig(self);
 
@@ -55,7 +85,11 @@ namespace HIFURailgunnerTweaks.Misc
 
         private void Boosted_OnEnter(On.EntityStates.Railgunner.Reload.Boosted.orig_OnEnter orig, EntityStates.Railgunner.Reload.Boosted self)
         {
-            self.bonusDamageCoefficient = Damage;
+            if (self.outer.TryGetComponent<ReloadScalingComponent>(out var reloadScalingComponent))
+            {
+                var increase = (MaximumReloadDamageBonus - MinimumReloadDamageBonus) / MaximumSuccessfulReloads;
+                self.bonusDamageCoefficient = Util.Remap(reloadScalingComponent.successfulReloadCounter, 0, MaximumSuccessfulReloads, MinimumReloadDamageBonus - increase, MaximumReloadDamageBonus);
+            }
             orig(self);
         }
 
@@ -78,5 +112,10 @@ namespace HIFURailgunnerTweaks.Misc
             }
             orig(self);
         }
+    }
+
+    public class ReloadScalingComponent : MonoBehaviour
+    {
+        public int successfulReloadCounter = 0;
     }
 }
